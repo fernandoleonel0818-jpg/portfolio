@@ -1,7 +1,7 @@
 import type { APIRoute } from 'astro';
 import { GoogleGenAI } from '@google/genai';
 import { Resend } from 'resend';
-import type { Message, LeadData } from '../types/chat.ts';
+import type { Message, LeadData } from '../../types/chat.ts';
 
 export const prerender = false;
 
