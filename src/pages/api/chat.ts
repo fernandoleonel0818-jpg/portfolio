@@ -84,15 +84,15 @@ export const POST: APIRoute = async ({ request }) => {
       parts: [{ text: msg.content }],
     }));
 
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+   const response = await ai.models.generateContent({
+      model: 'gemini-3.8-flash',
       contents,
       config: {
         systemInstruction: SYSTEM_PROMPT,
         responseMimeType: 'application/json',
         temperature: 0.7,
       },
-    });
+    })
 
     const rawText = response.text;
     if (!rawText) {
