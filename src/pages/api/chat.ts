@@ -73,16 +73,13 @@ async function generateWithRetry(
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
       return await ai.models.generateContent({
-        model: 'gemini-3.8-flash',
+        model: 'gemini-3.5-flash-lite',
         contents,
         config: {
           systemInstruction: SYSTEM_PROMPT,
           responseMimeType: 'application/json',
           temperature: 0.7,
-          maxOutputTokens: 400,
-          thinkingConfig: {
-            thinkingBudget: 0,
-          },
+          maxOutputTokens: 350,
         },
       });
     } catch (err: any) {
@@ -93,8 +90,8 @@ async function generateWithRetry(
         throw err;
       }
 
-      // Espera 1s en el primer reintento, 2s en el segundo
-      await new Promise((res) => setTimeout(res, attempt * 1000));
+      // Espera más corta entre reintentos (500ms, 1000ms)
+      await new Promise((res) => setTimeout(res, attempt * 500));
     }
   }
   throw new Error('No se pudo obtener respuesta de Gemini.');
