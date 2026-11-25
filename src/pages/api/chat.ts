@@ -65,6 +65,41 @@ async function sendLeadEmail(lead: LeadData) {
   });
 }
 
+async function generateWithRetry(
+  ai: GoogleGenAI,
+  contents: { role: string; parts: { text: string }[] }[],
+  maxRetries = 3
+) {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      return await ai.models.generateContent({
+        model: 'gemini-3.8-flash',
+        contents,
+        config: {
+          systemInstruction: SYSTEM_PROMPT,
+          responseMimeType: 'application/json',
+          temperature: 0.7,
+          maxOutputTokens: 400,
+          thinkingConfig: {
+            thinkingBudget: 0,
+          },
+        },
+      });
+    } catch (err: any) {
+      const status = err?.status;
+      const isTransient = status === 503 || status === 429;
+
+      if (!isTransient || attempt === maxRetries) {
+        throw err;
+      }
+
+      // Espera 1s en el primer reintento, 2s en el segundo
+      await new Promise((res) => setTimeout(res, attempt * 1000));
+    }
+  }
+  throw new Error('No se pudo obtener respuesta de Gemini.');
+}
+
 export const POST: APIRoute = async ({ request }) => {
   try {
     const { messages } = (await request.json()) as { messages: Message[] };
@@ -78,21 +113,12 @@ export const POST: APIRoute = async ({ request }) => {
 
     const ai = new GoogleGenAI({ apiKey: import.meta.env.GEMINI_API_KEY });
 
-    
     const contents = messages.map((msg) => ({
       role: msg.role === 'assistant' ? 'model' : 'user',
       parts: [{ text: msg.content }],
     }));
 
-   const response = await ai.models.generateContent({
-      model: 'gemini-3.8-flash',
-      contents,
-      config: {
-        systemInstruction: SYSTEM_PROMPT,
-        responseMimeType: 'application/json',
-        temperature: 0.7,
-      },
-    })
+    const response = await generateWithRetry(ai, contents);
 
     const rawText = response.text;
     if (!rawText) {
@@ -101,7 +127,6 @@ export const POST: APIRoute = async ({ request }) => {
 
     const parsed: AIResponse = JSON.parse(rawText);
 
-    
     let emailSent = false;
     if (parsed.isComplete && parsed.leadData) {
       await sendLeadEmail(parsed.leadData);
@@ -121,7 +146,8 @@ export const POST: APIRoute = async ({ request }) => {
     console.error('Error en /api/chat:', error);
     return new Response(
       JSON.stringify({
-        error: 'Hubo un problema al procesar tu consulta. Intentá de nuevo en unos segundos.',
+        error:
+          'El asistente está recibiendo muchas consultas en este momento. Probá mandar tu mensaje de nuevo.',
       }),
       { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
