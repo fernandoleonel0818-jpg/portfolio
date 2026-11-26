@@ -1,58 +1,72 @@
 ---
-const projects = [
-  {
-    title: "Asistente Calificador de Leads con IA",
-    description:
-      "Chat conversacional integrado en web que detecta necesidades del cliente, clasifica la prioridad y dispara un resumen automático por email.",
-    tags: ["Astro", "React", "TypeScript", "Gemini API"],
-  },
-  {
-    title: "Tienda Online Autogestionable",
-    description:
-      "E-commerce completo con catálogo administrable, carrito de compras, pasarela de pagos y notificaciones automáticas por correo.",
-    tags: ["Astro", "Tailwind CSS", "Firebase", "Pagos"],
-  },
-  {
-    title: "Sistema de Gestión de Reservas",
-    description:
-      "Aplicación para administrar turnos y disponibilidad en tiempo real con base de datos en la nube y panel simplificado.",
-    tags: ["Mobile", "Firebase", "Base de Datos"],
-  },
-];
+import { projects } from "../data/projects";
 ---
 
-<section id="projects" class="py-20 border-t border-zinc-800/80">
-  <span class="text-xs font-semibold uppercase tracking-widest text-emerald-400">
-    Portafolio
-  </span>
-  <h2 class="mt-2 text-2xl md:text-3xl font-bold text-white">
-    Proyectos destacados
-  </h2>
-  <p class="mt-2 text-zinc-400 max-w-xl">
-    Desarrollos reales que combinan interfaces limpias, lógica sólida y
-    automatización.
-  </p>
+<section id="projects" class="py-20">
+  <div class="mb-10">
+    <h2 class="text-3xl font-bold text-white tracking-tight">
+      Proyectos destacados
+    </h2>
+    <p class="mt-2 text-zinc-400">
+      Algunos de los sistemas, sitios web y automatizaciones que desarrollé.
+    </p>
+  </div>
 
-  <div class="mt-12 grid md:grid-cols-3 gap-6">
+  <!-- Cambiá a lg:grid-cols-3 cuando tengas 3 o más proyectos -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
     {projects.map((project) => (
-      <article class="group p-6 rounded-2xl bg-gradient-to-b from-zinc-900/70 to-zinc-900/30 border border-zinc-800/80 hover:border-emerald-500/40 transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between">
-        <div>
-          <div class="flex items-center justify-between">
-            <h3 class="text-lg font-semibold text-white group-hover:text-emerald-300 transition-colors">
-              {project.title}
-            </h3>
-          </div>
-          <p class="mt-3 text-sm text-zinc-400 leading-relaxed">
-            {project.description}
-          </p>
+      <article class="group rounded-2xl bg-zinc-900/60 border border-zinc-800 overflow-hidden flex flex-col hover:border-emerald-500/40 transition-colors">
+        {/* Contenedor de imagen en formato 16:9 */}
+        <div class="aspect-video w-full overflow-hidden bg-zinc-950 border-b border-zinc-800">
+          <img
+            src={project.image}
+            alt={`Vista previa de ${project.title}`}
+            loading="lazy"
+            class="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-300"
+          />
         </div>
 
-        <div class="mt-6 pt-4 border-t border-zinc-800/60 flex flex-wrap gap-2">
-          {project.tags.map((tag) => (
-            <span class="px-2.5 py-1 text-xs font-medium rounded-md bg-zinc-800/80 text-zinc-300 border border-zinc-700/50">
-              {tag}
-            </span>
-          ))}
+        {/* Info del proyecto */}
+        <div class="p-6 flex flex-col flex-1">
+          <h3 class="text-xl font-semibold text-white">{project.title}</h3>
+          <p class="mt-2 text-sm text-zinc-400 leading-relaxed flex-1">
+            {project.description}
+          </p>
+
+          {/* Etiquetas de tecnologías */}
+          <div class="mt-4 flex flex-wrap gap-2">
+            {project.tags.map((tag) => (
+              <span class="text-xs font-medium px-2.5 py-1 rounded-md bg-zinc-800/80 text-zinc-300 border border-zinc-700/50">
+                {tag}
+              </span>
+            ))}
+          </div>
+
+          {/* Botones (solo aparecen si cargaste los links) */}
+          {(project.demoUrl || project.repoUrl) && (
+            <div class="mt-6 pt-4 border-t border-zinc-800/80 flex items-center gap-4 text-sm font-medium">
+              {project.demoUrl && (
+                <a
+                  href={project.demoUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-emerald-400 hover:text-emerald-300 transition-colors"
+                >
+                  Ver demo en vivo →
+                </a>
+              )}
+              {project.repoUrl && (
+                <a
+                  href={project.repoUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-zinc-400 hover:text-white transition-colors"
+                >
+                  Código
+                </a>
+              )}
+            </div>
+          )}
         </div>
       </article>
     ))}
