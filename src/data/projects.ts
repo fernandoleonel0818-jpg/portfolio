@@ -12,7 +12,7 @@ export const projects: Project[] = [
     title: 'Hada Madrina Aromas',
     description:
       'Tienda online completa con catálogo autoadministrable, autenticación de usuarios, checkout con Mercado Pago y notificaciones automáticas por email.',
-    image: 'Proyectos/Hada-madrina.png', 
+    image: '/Projects/Hada-madrina.png', // Asegurate de que coincida con tu archivo en public/projects/
     tags: ['Astro', 'Tailwind', 'Sanity CMS', 'Mercado Pago', 'Firebase'],
     demoUrl: 'https://hada-madrina-web.vercel.app/',
   },
@@ -20,7 +20,7 @@ export const projects: Project[] = [
     title: 'ReservApp',
     description:
       'Aplicación móvil para la gestión y reserva de mesas en restaurantes con base de datos en tiempo real en la nube.',
-    image: 'Proyectos/reservapp.png',
+    image: '/Projects/reservapp.jpg',
     tags: ['Android', 'Firebase Firestore', 'Gestión en tiempo real'],
   },
 ];
